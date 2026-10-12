@@ -43,13 +43,14 @@ calculator are released for replication.}}
 Identity-disjoint evaluation is now the recommended convention in underwater acoustic target
 recognition (UATR), but its statistical cost has never been quantified. On OceanShip (12 classes),
 the vessel-disjoint accuracy of an identical model varies by $\pm$5.0\,pp across 25 independent
-draws of ships---twelve times the clip-level noise---while the nominal clip-vs-honest gap is
+draws---twelve times the clip-level noise---while the nominal clip-vs-honest gap is
 5.1\,pp on OceanShip but 30.4\,pp on DeepShip under identical code and recipe. We show that this
 draw-to-draw variance is dominated (89\% in-sample; 59\% out-of-sample under leave-one-draw-out)
 by the class composition of the test set, computable from metadata before any training; that a
 first-order predictor calibrated on this decomposition correctly estimated the observed spread of
 five allocation schemes across three model families; and that a class-wise clip-mass stratified
-allocation collapses the variance to the lowest level observed across the tested allocations (4.69 to 1.24\,pp; variance
+allocation collapses the variance to the lowest level observed across the tested allocations (4.69
+to 1.24\,pp; variance
 ratio 14.4, exact permutation $p=0.004$), reducing the draws needed to resolve a 2\,pp improvement
 from about 100 to 8 per system (10--13 to 3--7 when comparisons are fully paired). Consistently
 across models, the remedy shows no benefit on DeepShip, where composition-induced variability is small relative to the observed draw variability. The
@@ -530,7 +531,8 @@ statement; we report both to keep the in-sample optimism visible.
 \includegraphics[width=0.82\columnwidth]{figures/fig_pred.pdf}
 \caption{Predicted vs.\ observed draw-to-draw SD for five allocation schemes (three model
 families); shaded band $\pm25\%$. The calibration-based model tracks the identity line without
-seeing any training outcome of the schemes it predicts; random-draw SD of each backbone annotated.}
+seeing any training outcome of the schemes it predicts; the legend gives each scheme's
+random-draw SD.}
 \label{fig:pred}
 \end{figure}
 
@@ -542,10 +544,11 @@ Given the decomposition, the fix is to allocate whole vessels so that each class
 quota of \emph{clips} to test and validation. Per class $c$ with per-vessel clip counts $m_v$:
 order vessels by a hash of (draw seed, class, vessel); accumulate vessels into the test set until
 $\sum_v m_v \ge q_c$ with $q_c = 0.15\sum_v m_v$; repeat into validation; the remainder is
-training. No clip crosses a vessel boundary, and the test fraction per class is fixed by
-construction, which also removes the composition bias of random draws.
+training. No clip crosses a vessel boundary, and because the last vessel admitted may overshoot
+the quota, each class's test clip count is constrained to within one vessel of the target rather
+than exactly equal to it---which also removes the composition bias of random draws.
 
-\subsection{Results: The Variance Collapses to the Noise Floor}
+\subsection{Results: The Variance Collapses to the Observed Floor}
 Table~\ref{tab:remedy} gives the pre-specified comparison. On the reference model, random draws
 give $0.3157 \pm 4.69$\pp{} (5 draws; the released 25-draw pool, Sec.~\ref{sec:variance}, agrees
 at $0.3198 \pm 4.97$\pp) and clip-mass draws $0.3215 \pm 1.24$\pp: variance ratio $14.4$
