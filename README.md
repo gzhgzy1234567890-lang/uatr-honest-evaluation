@@ -12,12 +12,13 @@ Companion repository for the manuscript *"Honest Evaluation of Underwater Acoust
    class composition of the test set (permutation p = 0.0006; 59% predictable out-of-sample under
    leave-one-draw-out). The composition predictor is calibrated once from per-class recalls and
    needs no retraining to score a candidate allocation.
-3. **A class-wise clip-mass allocation collapses the variance** to an allocator-limited floor
+3. **A class-wise clip-mass allocation collapses the variance** to the lowest level observed
+   across the tested allocations
    (4.69 → 1.24 pp; variance ratio 14.4, exact permutation p = 0.004), reducing the draws needed to resolve a
    2 pp improvement from ~100 to 8 per system (3–7 under fully paired comparisons) — all figures
    are non-central-t planning estimates.
-4. **The remedy is correctly a no-op on DeepShip** (low composition variance), and the tail-class
-   collapse under honest evaluation resists six interventions — a three-tier structure the
+4. **No tested remedy helps on DeepShip** (composition-induced variability is small), and the tail-class
+   collapse under honest evaluation resists five tested interventions and a training-mass diagnostic — a three-tier structure the
    metadata predicts.
 
 ## Repository layout

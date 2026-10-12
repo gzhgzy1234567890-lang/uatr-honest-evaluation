@@ -40,7 +40,7 @@ def main():
     figdir = os.path.join(args.paper_dir, "figures")
     os.makedirs(figdir, exist_ok=True)
 
-    fig, ax = plt.subplots(figsize=(4.5, 3.4))
+    fig, ax = plt.subplots(figsize=(3.8, 3.1))
     deltas = np.linspace(1.0, 5.0, 100)
 
     def reqn_ind_nct(sd, delta, alpha=0.05, power=0.8):
@@ -59,7 +59,6 @@ def main():
     for name, sd, col, ls in CURVES:
         ax.plot(deltas, curve[name], color=col, ls=ls, lw=1.6, label=name)
     ax.axhline(30, color="#bbb", lw=0.8, ls=":")
-    ax.text(4.9, 34, "one week of GPU budget", fontsize=7, color="#888", ha="right")
     ax.axvline(2.0, color="#bbb", lw=0.8, ls=":")
     ax.annotate("98", (2.0, 98), xytext=(4, 0), textcoords="offset points", fontsize=7.5,
                 color=C["clip"])

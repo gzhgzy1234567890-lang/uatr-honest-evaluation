@@ -67,7 +67,7 @@ def fig_alloc(figdir):
     clip = {"logreg": (0.94, 6), "cnn_small": (1.24, 6), "cnn_wide": (1.36, 6)}
     ratio = {"logreg": 8.7, "cnn_small": 14.4, "cnn_wide": 5.1}
 
-    fig, ax = plt.subplots(figsize=(3.4, 2.7))
+    fig, ax = plt.subplots(figsize=(3.2, 2.4))
     x = np.arange(len(backbones))
     w = 0.34
     for off, vals, color, label in ((-w / 2, rand, C_RAND, "random draws"),
@@ -75,19 +75,19 @@ def fig_alloc(figdir):
         sd = [vals[b][0] for b in backbones]
         ax.bar(x + off, sd, width=w, color=color, alpha=0.85, label=label)
         for xi, v in zip(x + off, sd):
-            ax.text(xi, v + 0.08, f"{v:.2f}", ha="center", fontsize=7)
+            ax.text(xi, v + 0.08, f"{v:.2f}", ha="center", fontsize=7.5)
     for xi, b in zip(x, backbones):
         top = max(rand[b][0], clip[b][0])
-        ax.annotate(f"$\\times${ratio[b]:.1f}", (xi, top + 0.55),
-                    ha="center", fontsize=8, fontweight="bold", color="#333333")
+        ax.annotate(f"{ratio[b]:.1f}$\\times$\nvariance reduction", (xi, top + 0.5),
+                    ha="center", fontsize=7.2, fontweight="bold", color="#333333")
     ax.set_xticks(x)
-    ax.set_xticklabels(backbones, fontsize=8)
-    ax.set_ylabel("vessel-disjoint draw SD (pp)", fontsize=8)
-    ax.set_ylim(0, 5.6)
+    ax.set_xticklabels(["logreg", "cnn-small", "cnn-wide"], fontsize=9)
+    ax.set_ylabel("vessel-disjoint draw SD (pp)", fontsize=9)
+    ax.set_ylim(0, 6.4)
     ax.grid(axis="y", alpha=0.3)
-    ax.legend(fontsize=7, loc="upper right", framealpha=0.9)
+    ax.legend(fontsize=7.5, loc="upper right", framealpha=0.9)
     ax.set_title("The allocator decides the noise floor\n(OceanShip, three model families)",
-                 fontsize=9)
+                 fontsize=9.5)
     fig.tight_layout()
     out = os.path.join(figdir, "fig_alloc.pdf")
     fig.savefig(out)

@@ -142,7 +142,7 @@ def fig_dose(figdir):
         ("Anti-pollution equipment", 0.000, 5, 139),
     ]
     KEY = {"Towing", "Cargo", "Tug", "Passenger", "Port Tender", "Dredging"}
-    fig, axes = plt.subplots(1, 2, figsize=(5.8, 2.5), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(4.6, 2.2), sharey=True)
     for ax, idx, xlabel, rho in ((axes[0], 2, "training vessels per class", 0.68),
                                  (axes[1], 3, "training clips per class", 0.83)):
         ax.scatter([d[idx] for d in dose], [d[1] for d in dose], s=30,
@@ -180,7 +180,7 @@ def fig_tail(figdir):
     tiers = [("learnable", 0, 3, "#0f717320"),
              ("partially rescuable", 3, 5, "#e9c46a30"),
              ("intervention-resistant", 5, 12, "#d1495b18")]
-    fig, ax = plt.subplots(figsize=(6.6, 4.1))
+    fig, ax = plt.subplots(figsize=(5.1, 3.4))
     y = np.arange(len(CLASSES))[::-1]
     for name, a, b, col in tiers:
         ax.axhspan(y[b - 1] - 0.5, y[a] + 0.5, color=col, zorder=0)

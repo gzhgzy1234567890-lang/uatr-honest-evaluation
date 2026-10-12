@@ -44,17 +44,17 @@ calculator are released for replication.}}
 Identity-disjoint evaluation is now the recommended convention in underwater acoustic target
 recognition (UATR), but its statistical cost has never been quantified. On OceanShip,
 the vessel-disjoint accuracy of an identical model varies by $\pm$5.0\,pp across 25 independent
-draws---twelve times the clip-level noise---while the nominal clip-vs-honest gap is
-5.1\,pp on OceanShip but 30.4\,pp on DeepShip under identical code and recipe. We show that this
+draws---twelve times the clip-level noise---while the clip-vs-honest gap is
+5.1\,pp on OceanShip but 30.4\,pp on DeepShip. This
 draw-to-draw variance is dominated (89\% in-sample; 59\% out-of-sample under leave-one-draw-out)
-by the class composition of the test set, computable from metadata alone; that a
-first-order predictor calibrated on this decomposition correctly estimated the observed spread of
-five allocation schemes across three model families; and that a class-wise clip-mass stratified
+by the class composition of the test set, computable from metadata alone; a
+first-order predictor calibrated on it correctly estimated the observed spread of
+five allocation schemes across three model families; and a class-wise clip-mass stratified
 allocation collapses the variance to the lowest level observed across the tested allocations (4.69
 to 1.24\,pp; variance
 ratio 14.4, exact permutation $p=0.004$), reducing the draws needed to resolve a 2\,pp improvement
-from about 100 to 8 per system (10--13 to 3--7 when comparisons are fully paired). Consistently
-across models, the remedy shows no benefit on DeepShip, where composition-induced variability is small relative to the observed draw variability. In
+from about 100 to 8 per system (10--13 to 3--7 when comparisons are fully paired). Across
+models, the remedy shows no benefit on DeepShip, where composition-induced variability is small relative to the observed draw variability. In
 the tested settings and diagnostics, no pipeline defect emerged behind the low absolute accuracy
 of honest evaluation: five tested
 interventions---capacity growth, post-hoc prior adjustment, selective prediction, frozen
@@ -848,11 +848,13 @@ research underwent when multi-centre variance moved from anecdote to design para
 
 \subsection{What the Remedy Does and Does Not Claim}
 Clip-mass allocation does not make models better;
-it makes comparisons cheaper and honest numbers stable. The $4.69\to1.24$\pp{} collapse means a
-two-draw comparison that would have been dominated by composition noise becomes meaningful, and
+it makes comparisons cheaper and honest numbers stable. The $4.69\to1.24$\pp{} collapse makes a
+two-draw comparison feasible where it would previously have been dominated by composition
+noise---though two observations still support only weak inference---and
 paired designs (same draws for all systems) compose with it for a further
-measured $3$--$4\times$ reduction in the number of draws (Sec.~\ref{sec:remedy}). The remedy also removes the composition
-\emph{bias} of random draws: a random vessel draw can make the test set systematically easier or
+measured $3$--$4\times$ reduction in the number of draws (Sec.~\ref{sec:remedy}). The remedy also
+dampens the draw-to-draw random deviations of test-set class proportions from the corpus
+distribution; a random vessel draw can make the test set systematically easier or
 harder than the corpus, and averaging over few draws does not fix a biased draw.
 
 \subsection{Threats to Validity}

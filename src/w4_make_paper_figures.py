@@ -127,7 +127,7 @@ def probe(path):
     knn = [83.22, 50.33, 50.15]
     model = [92.19, 68.42, 61.82]
 
-    fig, ax = plt.subplots(figsize=(3.45, 2.15), dpi=300)
+    fig, ax = plt.subplots(figsize=(4.2, 2.5), dpi=300)
     w = 0.26
     xs = range(len(protocols))
     b1 = ax.bar([x - w for x in xs], scalar, w, color="#DD8452",
@@ -140,16 +140,17 @@ def probe(path):
     for bars in (b1, b2, b3):
         for r in bars:
             ax.text(r.get_x() + r.get_width() / 2, r.get_height() + 1.5,
-                    f"{r.get_height():.1f}", ha="center", fontsize=6.0)
+                    f"{r.get_height():.1f}", ha="center", fontsize=6.5)
 
-    ax.axhline(25, color="#888888", linestyle=(0, (3, 3)), linewidth=0.8)
-    ax.text(-0.38, 27.5, "chance (4-class)", fontsize=5.8, color="#888888")
+    ax.axhline(25, color="#888888", linestyle=(0, (3, 3)), linewidth=0.8,
+               label="chance (4-class)")
 
     ax.set_xticks(list(xs))
-    ax.set_xticklabels(protocols)
+    ax.set_xticklabels(["Clip\nrandom", "Recording\nrandom", "Temporal"])
     ax.set_ylabel("DeepShip accuracy (%)")
-    ax.set_ylim(0, 104)
-    ax.legend(fontsize=6.0, frameon=False, loc="upper right", handlelength=1.2)
+    ax.set_ylim(0, 108)
+    ax.set_xlim(-0.55, 2.55)
+    ax.legend(fontsize=6.5, frameon=False, loc="upper right", handlelength=1.2)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     fig.tight_layout(pad=0.2)
