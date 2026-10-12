@@ -141,7 +141,7 @@ def fig_dose(figdir):
         ("Port Tender", 0.007, 3, 743), ("Dredging", 0.000, 2, 26),
         ("Anti-pollution equipment", 0.000, 5, 139),
     ]
-    KEY = {"Towing", "Cargo", "Tug", "Port Tender", "Dredging"}
+    KEY = {"Towing", "Cargo", "Tug", "Port Tender"}
     fig, axes = plt.subplots(1, 2, figsize=(4.6, 2.2), sharey=True)
     for ax, idx, xlabel, rho in ((axes[0], 2, "training vessels per class", 0.68),
                                  (axes[1], 3, "training clips per class", 0.83)):
@@ -149,12 +149,13 @@ def fig_dose(figdir):
                    color=C_HONEST, alpha=0.85, edgecolor="white", lw=0.6)
         for d in dose:
             if d[0] in KEY:
-                ax.annotate(d[0], (d[idx], d[1]), xytext=(4, 3),
+                off = (4, 3) if d[1] > 0.01 else (4, -9)
+                ax.annotate(d[0], (d[idx], d[1]), xytext=off,
                             textcoords="offset points", fontsize=7.5, color="#333")
         ax.set_xscale("log")
         ax.set_xlabel(xlabel, fontsize=9)
-        ax.text(0.98, 0.02, f"Spearman $\\rho$={rho:+.2f}", transform=ax.transAxes,
-                ha="right", fontsize=8, color="#555")
+        ax.text(0.03, 1.0, f"Spearman $\\rho$={rho:+.2f}", transform=ax.transAxes,
+                ha="left", va="top", fontsize=8, color="#555")
         ax.set_ylim(-0.08, 0.85)
         ax.grid(alpha=0.25, lw=0.6)
     axes[0].set_ylabel("per-class recall (vessel disjoint)")
