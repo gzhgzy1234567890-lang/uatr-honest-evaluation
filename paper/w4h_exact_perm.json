@@ -1,0 +1,25 @@
+{
+ "kind": "w4h-exact-permutation-remedy",
+ "statistic": "log variance ratio",
+ "two_sided": true,
+ "cells": {
+  "cnn_small": {
+   "log_var_ratio": -2.6669119048252625,
+   "variance_ratio": 0.0694664133184283,
+   "exact_p_two_sided": 0.004329004329004329,
+   "n_assignments": 462
+  },
+  "cnn_wide": {
+   "log_var_ratio": -1.6232979539947763,
+   "variance_ratio": 0.1972471133189296,
+   "exact_p_two_sided": 0.012987012987012988,
+   "n_assignments": 462
+  },
+  "logreg": {
+   "log_var_ratio": -2.163970512898181,
+   "variance_ratio": 0.11486812900425099,
+   "exact_p_two_sided": 0.012987012987012988,
+   "n_assignments": 462
+  }
+ }
+}

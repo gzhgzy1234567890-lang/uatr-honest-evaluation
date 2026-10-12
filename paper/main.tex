@@ -7,6 +7,7 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{url}
+\usepackage{url}
 \usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue]{hyperref}
 
 \newcommand{\pp}{\,\text{pp}}
@@ -15,8 +16,8 @@
 
 \begin{document}
 
-\title{What Do Underwater Acoustic Target Recognition Benchmarks Actually Measure?\\
-A Variance Decomposition of Honest Evaluation, a Metadata-Only Remedy, and the Limits of Intervention}
+\title{Honest Evaluation of Underwater Acoustic Target Recognition:\\
+Decomposing, Predicting, and Reducing Benchmark Variance}
 
 \author{\IEEEauthorblockN{Zihao~Gong,~Debiao~Li,~Juncheng~Liu,~Junrui~Guo,~Qi~Gong,~and~Yongqiang~Xie}
 \IEEEauthorblockA{Z.~Gong, D.~Li, and Y.~Xie: School of Mechanical Engineering,
@@ -28,45 +29,40 @@ Guilin University of Electronic Technology, Guilin, China (3409674230@qq.com)}
 Xi'an, China (guojunrui@stu.xidian.edu.cn)}
 \IEEEauthorblockA{Q.~Gong: Petroleum and Natural Gas Engineering,
 Southwest Petroleum University, Chengdu, China (kungclive.8804@gmail.com)}
-\thanks{Manuscript received XXXX; revised XXXX.}%
 \thanks{Z.~Gong and D.~Li contributed equally to this work. Corresponding author:
 Yongqiang~Xie (e-mail: yqxie@xidian.edu.cn).}%
 \thanks{All frozen splits, allocation code, per-clip predictions, and the required-$N$
 calculator are released for replication.}}
 
 \markboth{IEEE Journal of Oceanic Engineering --- Draft}%
-{Gong \MakeLowercase{\textit{et al.}}: What Do UATR Benchmarks Actually Measure?}
+{Gong \MakeLowercase{\textit{et al.}}: Honest Evaluation of Underwater Acoustic Target Recognition}
 
 \maketitle
 
 \begin{abstract}
-Community guidance in underwater acoustic target recognition (UATR) increasingly asks for
-recording- or vessel-disjoint (``honest'') evaluation instead of clip-level random splits,
-because adjacent clips share background noise and propagation conditions and inflate reported
-accuracy. What the guidance does not say is what honest evaluation costs. On OceanShip
-(12 classes), the vessel-disjoint accuracy of an identical model varies by $\pm$5.0\pp{} from one
-random draw of ships to the next (25 independent draws)---twelve times the clip-level noise---while the nominal
-clip-vs-honest gap is 5.1\pp{} on OceanShip but 30.4\pp{} on DeepShip under the same code, model,
-and recipe. We show that this draw-to-draw variance is dominated (89\% in-sample; 59\%
-out-of-sample under leave-one-draw-out) by the class composition of
-the test set, which is computable from metadata alone before any training; that a first-order
-predictor built on this decomposition correctly estimated the observed spread of five independent
-allocation schemes across three model families; and that a class-wise clip-mass stratified
-allocation collapses the variance to a low, allocator-limited floor ($4.69\pp \to 1.24\pp$,
-variance ratio 14.4, permutation $p=0.002$), reducing the draws needed to resolve a 2\pp{}
-improvement from about 100 independent draws to 8 (and, for fully paired two-model comparisons,
-from 10--13 to 3--7). Consistently with the same model, the remedy shows no benefit on DeepShip,
-where composition variance is absent. We further show that the low absolute accuracy of honest
-evaluation is not a pipeline defect: six interventions---capacity, loss re-weighting, selective
-prediction, identity weighting, frozen AudioSet-pretrained encoders, and full fine-tuning---all
-fail to decode the nine-class tail, whose three-tier structure (learnable, partially rescuable,
-resistant to every tested intervention) is itself predicted from metadata. We release frozen splits, allocation code, and a
-required-$N$ calculator, and propose a five-number reporting recipe for UATR benchmarks.
+Identity-disjoint evaluation is now the recommended convention in underwater acoustic target
+recognition (UATR), but its statistical cost has never been quantified. On OceanShip (12 classes),
+the vessel-disjoint accuracy of an identical model varies by $\pm$5.0\,pp across 25 independent
+draws of ships---twelve times the clip-level noise---while the nominal clip-vs-honest gap is
+5.1\,pp on OceanShip but 30.4\,pp on DeepShip under identical code and recipe. We show that this
+draw-to-draw variance is dominated (89\% in-sample; 59\% out-of-sample under leave-one-draw-out)
+by the class composition of the test set, computable from metadata before any training; that a
+first-order predictor calibrated on this decomposition correctly estimated the observed spread of
+five allocation schemes across three model families; and that a class-wise clip-mass stratified
+allocation collapses the variance to a low, allocator-limited floor (4.69 to 1.24\,pp; variance
+ratio 14.4, exact permutation $p=0.004$), reducing the draws needed to resolve a 2\,pp improvement
+from about 100 to 8 per system (10--13 to 3--7 when comparisons are fully paired). Consistently
+across models, the remedy shows no benefit on DeepShip, where composition variance is absent. The
+low absolute accuracy of honest evaluation is not a pipeline defect: six tested
+remedies---capacity growth, post-hoc prior adjustment, selective prediction, training-mass
+analysis, frozen pretraining, and full fine-tuning---fail to decode the nine-class tail, whose
+three-tier structure is itself predicted from metadata. Frozen splits, allocation code, and a
+required-$N$ calculator are released.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Underwater acoustic target recognition, data leakage, evaluation methodology, variance
-decomposition, stratified group allocation, benchmark design, class imbalance.
+Underwater acoustic target recognition, vessel-disjoint evaluation, benchmark variance,
+group-stratified allocation, data leakage.
 \end{IEEEkeywords}
 
 \section{Introduction}
@@ -85,8 +81,7 @@ machine-learning literature, leakage taxonomies \cite{kapoor2023} and variance a
 This paper starts from the observation that the guidance leaves out: \emph{honest evaluation has a
 noise floor, and, to our knowledge, no one has measured it.} When the unit of allocation is the vessel or the
 recording, each random draw changes which ships---and therefore which classes---land in the test
-set. On OceanShip, the largest \emph{publicly downloadable} benchmark with vessel identities (the
-larger UniqueShip corpus restricts audio access \cite{uniqueship2026}), the test accuracy of an
+set. On OceanShip, a public benchmark with vessel identities, the test accuracy of an
 identical model under identical training varies by $\pm5.0$\pp{} from one vessel-disjoint draw to
 the next (25 independent draws), while the clip-random baseline varies by $\pm0.4$\pp. The honest protocol is therefore
 simultaneously more meaningful and twelve times noisier; a paper reporting a single honest-protocol
@@ -114,15 +109,15 @@ We make four contributions.
 \item \textbf{A remedy with measured variance reduction} (Sec.~\ref{sec:remedy}). A class-wise
       clip-mass stratified allocation---assigning whole vessels until each class has contributed
       its quota of \emph{clips}---collapses the honest-protocol variance to a low,
-      allocator-limited floor ($4.69\pp \to 1.24\pp$; variance ratio 14.4, permutation $p=0.002$), generalizes across
+      allocator-limited floor ($4.69\pp \to 1.24\pp$; variance ratio 14.4, exact permutation $p=0.004$), generalizes across
       a linear probe and a $4\times$ wider CNN, and reduces the draws needed to resolve a 2\pp{}
       improvement from about 100 independent draws to 8---and paired two-model comparisons need
       3--7 draws rather than 10--13. A naive stratification balancing \emph{vessel counts} instead of
       clip masses fails exactly as the decomposition predicts.
-\item \textbf{The limits of intervention} (Sec.~\ref{sec:limits}). The low absolute accuracy of
-      honest evaluation is not a pipeline defect: six interventions---capacity, loss re-weighting,
-      selective prediction, identity weighting, frozen AudioSet-pretrained encoders, and full
-      fine-tuning---all fail to decode the nine-class tail, whose three-tier structure
+\item \textbf{The limits of tested remedies} (Sec.~\ref{sec:limits}). The low absolute accuracy of
+      honest evaluation is not a pipeline defect: six tested remedies---capacity growth, post-hoc
+      prior adjustment, selective prediction, training-mass analysis, frozen pretrained encoders,
+      and full fine-tuning---fail to decode the nine-class tail, whose three-tier structure
       (learnable, partially rescuable, intervention-resistant) is predictable from metadata.
 \end{enumerate}
 
@@ -550,7 +545,7 @@ construction, which also removes the composition bias of random draws.
 Table~\ref{tab:remedy} gives the pre-specified comparison. On the reference model, random draws
 give $0.3157 \pm 4.69$\pp{} (5 draws; the released 25-draw pool, Sec.~\ref{sec:variance}, agrees
 at $0.3198 \pm 4.97$\pp) and clip-mass draws $0.3215 \pm 1.24$\pp: variance ratio $14.4$
-($F$-test $p=0.012$; permutation $p=0.002$; $16.1$ against the 25-draw random pool)---down to the
+($F$-test $p=0.012$; exact permutation $p=0.004$; $16.1$ against the 25-draw random pool)---down to the
 level of the residual draw-to-draw variability quantified in Table~\ref{tab:decomp} ($1.65$\pp;
 not pure initialization noise, which the clip-level pipeline bounds at $0.41$\pp, but the
 residual band the allocator cannot remove). Because the test sets are now composition-matched, means are comparable
@@ -576,8 +571,8 @@ clip-mass SD's $95\%$ interval spans $0.8$--$3.0$\pp), so the budgets are planni
 measured costs. Pairing and the allocator are complementary, not
 alternatives: pairing removes the shared composition term, the allocator removes what remains.
 Across the twelve hypothesis tests reported in Tables~\ref{tab:ladder}--\ref{tab:remedy},
-a Benjamini--Hochberg correction at FDR $0.05$ changes no conclusion (largest corrected
-$p$ among rejected nulls: $0.018$).
+a Benjamini--Hochberg correction at FDR $0.05$ changes no conclusion; the test family and raw
+p-values are recoverable from the released per-draw files via the aggregation scripts.
 
 \begin{table*}[!t]
 \caption{Remedy vs.\ Alternatives, OceanShip Vessel-Disjoint, rec2 Recipe}
@@ -610,7 +605,8 @@ shows \emph{observed} lower variability; superiority over SGKF is not establishe
 significance at these sample sizes. All schemes share the same 70/15/15 clip budget and vessel
 exclusivity; no vessel carries conflicting labels (5 of 892 have minority-class clips, 1.1\% of
 clips; allocation uses the vessel's majority class). Clip-mass variance ratios 14.4 / 8.7 / 5.1;
-permutation $p\le0.009$.}
+permutation $p\le0.013$ (exact enumeration of all $\binom{11}{5}=462$ scheme-label assignments,
+statistic = log variance ratio, two-sided; script \texttt{w4h\_exact\_perm.py} in the release).}
 \end{table*}
 
 \begin{figure*}[!t]
@@ -630,7 +626,7 @@ budget. Planning estimates under SDs measured on 5--25 draws.}
 \subsection{Cross-Model Generalization and Two Instructive Failures}
 The collapse holds on every model family tested (Table~\ref{tab:remedy}, Fig.~\ref{fig:alloc}): a
 linear probe (variance
-ratio $8.7$, permutation $p=0.007$), the reference CNN ($14.4$, $p=0.002$), and the wider CNN
+ratio $8.7$, exact permutation $p=0.013$), the reference CNN ($14.4$, $p=0.004$), and the wider CNN
 ($5.1$, $p=0.009$); per-model SD ratios are $0.34$, $0.26$, $0.44$, all under the pre-specified
 $0.6$ bar. Two failures sharpen the mechanism. \emph{Count-stratified} allocation, balancing the
 number of \emph{vessels} per class, leaves the variance unchanged (ratio $0.93$) with a $+5.4$\pp{}
@@ -638,7 +634,8 @@ mean shift (Welch $p=0.096$, not significant---we do not read its direction): ve
 3--250 clips each (an
 $80\times$ range), so count balance does not balance information mass. \emph{StratifiedGroupKFold}
 \cite{sklearn}, the standard tool, halves the variance (ratio $3.25$) but remains $2.4\times$ worse
-than clip-mass. Stratification must act on identity-\emph{mass}, not identity counts---and the
+than clip-mass. In the experiments reported here, stratification had to act on identity-\emph{mass},
+not identity counts---and the
 composition model predicted both outcomes in advance.
 
 \subsection{A Low-Composition-Variance Control on DeepShip}
@@ -689,14 +686,14 @@ clip-mass draws       & 6 & 0.654 & 3.92 & \\
 \section{Limits of Tested Interventions: The Effective Class Structure}
 \label{sec:limits}
 
-\subsection{Six Interventions, One Negative Result}
+\subsection{Six Tested Remedies, One Negative Result}
 Under the honest protocol the reference model collapses to three classes (Towing 0.72, Cargo 0.58,
 Tug 0.37 recall; nine classes $\le0.07$, four to five never predicted; macro-F1 0.11 against a 0.083
 uniform baseline). For every obvious explanation we pre-specified a discriminating experiment and
 ran it (Table~\ref{tab:interv}).
 
 \begin{table}[!t]
-\caption{Six Interventions Against the Tail-Class Collapse}
+\caption{Six Tested Remedies Against the Tail-Class Collapse}
 \label{tab:interv}
 \centering
 \begin{tabular}{p{0.34\columnwidth}p{0.56\columnwidth}}
@@ -706,7 +703,7 @@ Intervention & Pre-registered test and outcome \\
 Capacity (ResNet-18, 11.2M) & memorizes the training set (0.9999), tests at 0.378; $+1.0$\pp{}
 over \texttt{cnn\_small} \cite{soti2026}. \\
 \midrule
-Loss re-weighting & offline logit adjustment on saved probabilities upper-bounds decision-rule
+Post-hoc prior adjustment & offline logit adjustment on saved probabilities upper-bounds decision-rule
 fixes that leave training untouched (it cannot alter learned representations, as in-training loss
 re-weighting could): best $+2.0$\pp{} macro-F1 (accuracy $-2.3$\pp). \\
 \midrule
@@ -714,14 +711,14 @@ Selective prediction & accuracy--coverage curves are flat for three confidence s
 (plots in the release): acc@50\%
 $=0.367$ ($+4.9$\pp); a head-only system still answers 97.3\% of tail clips. \\
 \midrule
-Identity weighting & dose--response: recall tracks training clip count ($\rho=+0.83$) better than
+Training-mass analysis & diagnostic dose--response: recall tracks training clip count ($\rho=+0.83$) better than
 vessel count ($\rho=+0.68$); 42-vessel Passenger at 0.000 recall. Identity floor confirmed only for
 the 2 classes with $<5$ training vessels (pre-specified, hit). \\
 \midrule
 Frozen pretraining & AudioSet AST \cite{gong2021ast} + linear probe on all 53{,}770 clips: tail
 top-2 $0.116$ vs.\ $0.114$ for the small CNN. \\
 \midrule
-Full fine-tuning & end-to-end AST (2 seeds $\times$ 8 epochs): the only intervention that moves
+Full fine-tuning & end-to-end AST (2 seeds $\times$ 8 epochs): the only tested remedy that moves
 macro-F1 ($0.108\to0.142$), but tail top-2 reaches $0.178$ (GO bar $0.30$); val peaks at epoch 2
 then degrades to train-acc 0.81. \\
 \bottomrule
@@ -740,7 +737,7 @@ projects 60\% onto Tug, Tug itself 37.8\% onto Cargo, and the class means in fea
 classes, 61.5\% of clips), \emph{partially rescuable} (Fishing, Pleasure Craft), and
 \emph{intervention-resistant} (Passenger, Sailing, SAR, Tanker, plus the identity-floor classes Port Tender
 and Dredging with 3 and 2 training vessels---a collapse we predicted before running and
-confirmed). ``Resistant'' means not recovered by any of the six tested interventions; it is not a
+confirmed). ``Resistant'' means not recovered by any of the six tested remedies; it is not a
 claim that no intervention could ever work. The cross-corpus contrast confirms the attribution: the same pipeline learns all four
 DeepShip classes under the honest protocol (recalls 0.55--0.75), so the collapse is a property of
 the benchmark's class granularity, not of our models. We state this as a diagnosis across two
@@ -798,8 +795,8 @@ Dredging               & 0.000 & 2   & 26 \\
 \centering
 \includegraphics[width=0.85\columnwidth]{figures/fig_confusion.pdf}
 \caption{Row-normalized confusion matrix (pooled over five vessel-disjoint draws). Tail-class mass
-flows almost exclusively into the three head columns; within the tail, confusion is diffuse. The
-12-class benchmark behaves as a 3-class problem with nine passengers on the error mass.}
+flows almost exclusively into the three head columns; within the tail, confusion is diffuse. Under
+the honest protocol the 12-class benchmark behaves as a 3-class problem.}
 \label{fig:confusion}
 \end{figure}
 
@@ -884,7 +881,7 @@ composition (59\% predictable out-of-sample), removable by a class-mass allocati
 allocator-limited floor
 ($14.4\times$ variance reduction, $p=0.002$), general across model families, and correctly
 predicted to be unnecessary on DeepShip. We also showed what the resulting honest numbers mean: a
-three-tier effective class structure that six interventions---including full fine-tuning of an
+three-tier effective class structure that six tested remedies---including full fine-tuning of an
 AudioSet-pretrained transformer---cannot open beyond its predicted limits under the tested
 settings. Benchmarks should report
 the allocation scheme, the draw variance, and the effective class structure; without them,
@@ -900,7 +897,7 @@ allocation scripts, per-clip predictions for every run, the required-$N$ calcula
 manifest (\texttt{run\_manifest.csv}: one row per released draw with corpus, model, protocol,
 allocation scheme, split seed, and metrics), and the machine-readable aggregation outputs
 (\texttt{w3e\_bootstrap.json}, \texttt{w3e2\_variance.json}, \texttt{w3e3\_lodo.json}) are
-released at \texttt{github.com/gzhgzy1234567890-lang/uatr-honest-evaluation} (a DOI-minted
+released at \url{https://github.com/gzhgzy1234567890-lang/uatr-honest-evaluation} (a DOI-minted
 archive follows at acceptance). Every table
 regenerates from the released per-draw
 files. On DeepShip, the 48 recordings whose AIS join failed enter the vessel-disjoint protocol as
@@ -910,38 +907,32 @@ same rule, so what the split promises and what it verifies are identical.
 {\footnotesize
 \begin{thebibliography}{99}
 
-\bibitem{kapoor2023}
-S.~Kapoor and A.~Narayanan, ``Leakage and the reproducibility crisis in machine-learning-based
-science,'' \emph{Patterns}, vol.~4, no.~9, 2023.
-
-\bibitem{uniqueship2026}
-C.~Hashemi, T.~Stout, A.~Hoogs, and J.~Parham, ``UniqueShip: Mitigating data leakage in acoustic
-ship classification benchmark datasets,'' arXiv:2609.13659, 2026 (accepted, OCEANS 2026).
-
 \bibitem{review2026}
 C.~Yan, R.~Gao, G.~Pan, Y.~Yu, S.~Yan, J.~Xu, Y.~Yang, T.~Yao, and J.~Li, ``Review of underwater
 acoustic target recognition technology: From machine learning to deep learning'' (in Chinese),
 \emph{Digital Ocean \& Underwater Warfare}, vol.~9, no.~2, pp. 118--130, 2026,
 doi:10.19838/j.issn.2096-5753.2026.02.001.
 
+\bibitem{uniqueship2026}
+C.~Hashemi, T.~Stout, A.~Hoogs, and J.~Parham, ``UniqueShip: Mitigating data leakage in acoustic
+ship classification benchmark datasets,'' arXiv:2609.13659, 2026 (accepted, OCEANS 2026).
+
 \bibitem{boosting2026}
 C.~Yan, S.~Yan, Y.~Yu, R.~Gao, G.~Pan, Y.~Yang, T.~Yao, and P.~N.~Suganthan,
 ``Boosting-inspired sequential multi-head learning for underwater acoustic target recognition,''
 \emph{Ocean Engineering}, vol.~356, art. 125324, 2026, doi:10.1016/j.oceaneng.2026.125324.
 
-\bibitem{hummel2026}
-H.~I.~Hummel, S.~Bhulai, R.~van~der~Mei, and B.~Ghani, ``Linear probing enables ship-radiated
-noise recognition with pretrained audio embeddings,'' \emph{Ecological Informatics}, vol.~95,
-art. 103709, 2026, doi:10.1016/j.ecoinf.2026.103709 (arXiv:2601.08358).
-
-\bibitem{mmipfnn2026}
-F.~Liu, Z.~Li, K.~Yang, F.~Chen, and J.~Yu, ``MmPiFNN: A multi-mode physics-informed fuzzy neural
-network for passive recognition of surface ships by underwater equipment using ship radiated noise
-signals,'' \emph{Defence Technology}, vol.~59, pp. 243--266, 2026, doi:10.1016/j.dt.2025.11.003.
+\bibitem{kapoor2023}
+S.~Kapoor and A.~Narayanan, ``Leakage and the reproducibility crisis in machine-learning-based
+science,'' \emph{Patterns}, vol.~4, no.~9, 2023.
 
 \bibitem{bouthillier2021}
 X.~Bouthillier \emph{et al.}, ``Accounting for variance in machine learning benchmarks,'' in
 \emph{Proc.\ MLSys}, 2021 (arXiv:2103.03098).
+
+\bibitem{mpds2026}
+K.~Shao, ``Metadata predictability is not evidence dependence: An intervention-based audit for
+weak-label benchmarks,'' arXiv:2605.23701, 2026 (ICML 2026 Workshop on Hypothesis Testing).
 
 \bibitem{gillick1989}
 L.~Gillick and S.~J.~Cox, ``Some statistical issues in the comparison of speech recognition
@@ -968,17 +959,15 @@ Z.~Li, S.~Xiang, T.~Yu, J.~Gao, J.~Ruan, Y.~Hu, T.~Liu, and Y.~Fu, ``OceanShip: 
 dataset for underwater audio target recognition,'' in \emph{Proc.\ ICIC}, LNCS, 2024
 (arXiv:2401.02099).
 
-\bibitem{soti2026}
-A.~Soti, T.~P.~Sone, N.~Ibnul, H.~H.~Aung, H.~Zhong, G.~Cohen, and Y.~Xu, ``Towards deployable
-underwater vessel classification,'' arXiv:2609.29179, 2026.
+\bibitem{hummel2026}
+H.~I.~Hummel, S.~Bhulai, R.~van~der~Mei, and B.~Ghani, ``Linear probing enables ship-radiated
+noise recognition with pretrained audio embeddings,'' \emph{Ecological Informatics}, vol.~95,
+art. 103709, 2026, doi:10.1016/j.ecoinf.2026.103709 (arXiv:2601.08358).
 
-\bibitem{gong2021ast}
-Y.~Gong, Y.-A. Chung, and J.~Glass, ``AST: Audio spectrogram transformer,'' in \emph{Interspeech},
-2021.
-
-\bibitem{mpds2026}
-K.~Shao, ``Metadata predictability is not evidence dependence: An intervention-based audit for
-weak-label benchmarks,'' arXiv:2605.23701, 2026 (ICML 2026 Workshop on Hypothesis Testing).
+\bibitem{aa2025contrastive}
+H.~Hummel, A.~Gansekoele, S.~Bhulai, and R.~van~der~Mei, ``The computation of generalized
+embeddings for underwater acoustic target recognition using contrastive learning,''
+\emph{Applied Acoustics}, vol.~243, art. 111103, 2026, doi:10.1016/j.apacoust.2025.111103.
 
 \bibitem{fang2025}
 H.~Fang, Y.~Xie, J.~Ren, W.~Wang, and J.~Xu, ``A momentum-based adversarial training approach
@@ -986,12 +975,17 @@ for generalization in underwater acoustic target recognition: An individual-vess
 perspective,'' \emph{Journal of the Acoustical Society of America}, vol.~157, no.~5,
 pp. 3508--3523, 2025, doi:10.1121/10.0036456.
 
-\bibitem{aa2025contrastive}
-H.~Hummel, A.~Gansekoele, S.~Bhulai, and R.~van~der~Mei, ``The computation of generalized
-embeddings for underwater acoustic target recognition using contrastive learning,''
-\emph{Applied Acoustics}, vol.~243, art. 111103, 2026, doi:10.1016/j.apacoust.2025.111103.
+\bibitem{mmipfnn2026}
+F.~Liu, Z.~Li, K.~Yang, F.~Chen, and J.~Yu, ``MmPiFNN: A multi-mode physics-informed fuzzy neural
+network for passive recognition of surface ships by underwater equipment using ship radiated noise
+signals,'' \emph{Defence Technology}, vol.~59, pp. 243--266, 2026, doi:10.1016/j.dt.2025.11.003.
 
+\bibitem{soti2026}
+A.~Soti, T.~P.~Sone, N.~Ibnul, H.~H.~Aung, H.~Zhong, G.~Cohen, and Y.~Xu, ``Towards deployable
+underwater vessel classification,'' arXiv:2609.29179, 2026.
+
+\bibitem{gong2021ast}
+Y.~Gong, Y.-A. Chung, and J.~Glass, ``AST: Audio spectrogram transformer,'' in \emph{Interspeech},
+2021.
 \end{thebibliography}
-}
-
-\end{document}
+}\end{document}

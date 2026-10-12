@@ -1,8 +1,6 @@
 # Honest Evaluation of Underwater Acoustic Target Recognition (UATR)
 
-Companion repository for the manuscript *"What Do Underwater Acoustic Target Recognition
-Benchmarks Actually Measure? A Variance Decomposition of Honest Evaluation, a Metadata-Only
-Remedy, and the Limits of Intervention"* (IEEE Journal of Oceanic Engineering, submission).
+Companion repository for the manuscript *"Honest Evaluation of Underwater Acoustic Target Recognition: Decomposing, Predicting, and Reducing Benchmark Variance"* (IEEE Journal of Oceanic Engineering, submission).
 
 ## What this paper shows
 
