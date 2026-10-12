@@ -80,8 +80,8 @@ def fig_alloc(figdir):
             ax.text(xi, v + 0.08, f"{v:.2f}", ha="center", fontsize=7.5)
     for xi, b in zip(x, backbones):
         top = max(rand[b][0], clip[b][0])
-        ax.annotate(f"{ratio[b]:.1f}$\\times$\nvariance reduction", (xi, top + 0.5),
-                    ha="center", fontsize=7.2, fontweight="bold", color="#333333")
+        ax.annotate(f"{ratio[b]:.1f}$\\times$", (xi, top + 0.45),
+                    ha="center", fontsize=9, fontweight="bold", color="#333333")
     ax.set_xticks(x)
     ax.set_xticklabels(["logreg", "cnn-small", "cnn-wide"], fontsize=9)
     ax.set_ylabel("vessel-disjoint draw SD (pp)", fontsize=9)

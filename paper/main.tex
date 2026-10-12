@@ -639,10 +639,11 @@ statistic = log variance ratio, two-sided; script \texttt{w4h\_exact\_perm.py} i
 \hfill
 \includegraphics[width=0.5\textwidth]{figures/fig_reqn.pdf}
 \caption{Left: Table~\ref{tab:remedy} at a glance---the vessel-disjoint draw SD under random
-versus clip-mass allocation, per model family (ratios annotated); the allocator, not the backbone,
+versus clip-mass allocation, per model family; the annotated ratios are variance reductions
+(clip-mass relative to random, values from Table~\ref{tab:remedy}). The allocator, not the backbone,
 decides the observed noise level. Right: independent draws per system required to resolve an improvement of
 $\delta$\pp{} ($\alpha=0.05$, power 0.8, two-sample non-central $t$), for the random convention,
-\texttt{StratifiedGroupKFold}, and clip-mass allocation; dashed line: a realistic weekly GPU
+\texttt{StratifiedGroupKFold}, and clip-mass allocation; red dotted line: a realistic weekly GPU
 budget. Planning estimates under SDs measured on 5--25 draws.}
 \label{fig:alloc}
 \end{figure*}
@@ -689,9 +690,10 @@ $0.71\pm8$\pp, Passenger $0.66\pm8$\pp, Tug $0.64\pm10$\pp, Cargo $0.52\pm10$\pp
 $19$\pp{} spread in which every class stays far above the $0.25$ chance rate (pooled macro-F1
 $0.61\pm5.4$\pp), against OceanShip's
 three-tier collapse under the same protocol (best class $0.75$; nine classes $\le0.07$; four or
-five never predicted). Class \emph{granularity}, not corpus identity, decides whether honest
-evaluation strands classes: four balanced classes over 609 recordings leave no tail; twelve
-AIS-administrative classes over 892 vessels leave nine.
+five never predicted). The observed contrast suggests an important role of class
+\emph{granularity} in whether honest evaluation strands classes---four balanced classes over 609
+recordings leave no tail; twelve AIS-administrative classes over 892 vessels leave nine---though
+corpus-specific differences beyond granularity prevent a causal attribution to granularity alone.
 
 \begin{table}[!t]
 \caption{Low-Composition-Variance Control: DeepShip \texttt{rec\_random} (\texttt{cnn\_small}, log-mel)}
