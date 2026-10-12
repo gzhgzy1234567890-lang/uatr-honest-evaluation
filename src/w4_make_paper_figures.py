@@ -22,6 +22,8 @@ from matplotlib.patches import FancyBboxPatch, Rectangle
 plt.rcParams.update({
     "font.size": 10,
     "font.family": "DejaVu Sans",
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
     "axes.linewidth": 0.8,
 })
 

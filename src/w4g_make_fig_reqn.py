@@ -15,7 +15,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-plt.rcParams.update({"font.size": 10, "font.family": "DejaVu Sans", "axes.linewidth": 0.8})
+plt.rcParams.update({"font.size": 10, "font.family": "DejaVu Sans",
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42, "axes.linewidth": 0.8})
 C = {"clip": "#c44e52", "honest": "#55a868", "grey": "#7f7f7f"}
 CURVES = (("random draws (SD 4.97 pp)", 4.97, C["clip"], "-"),
           ("SGKF (SD 2.60 pp)", 2.60, C["grey"], "--"),

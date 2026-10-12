@@ -28,7 +28,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-plt.rcParams.update({"font.size": 10, "font.family": "DejaVu Sans", "axes.linewidth": 0.8})
+plt.rcParams.update({"font.size": 10, "font.family": "DejaVu Sans",
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42, "axes.linewidth": 0.8})
 
 CELL = "oceanship/logmel/cnn_small/vessel_disjoint/rec2"
 DRIVER_CLASS = "Towing"          # index 10 in the 12-class vocabulary

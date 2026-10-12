@@ -20,6 +20,8 @@ import numpy as np
 plt.rcParams.update({
     "font.size": 10,
     "font.family": "DejaVu Sans",
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
     "axes.titlesize": 11,
     "axes.labelsize": 10.5,
     "axes.spines.top": False,
