@@ -1,15 +1,17 @@
-"""W4-D — two additional paper figures from released per-draw statistics.
+"""W4-D — allocator-effect figure (fig_alloc.pdf) from released per-draw statistics.
 
-fig_decomp.pdf  variance decomposition (Table IV visualized): composition vs
-                residual SD per protocol; the honest protocol's noise is mostly
-                metadata, the clip protocol's is not.
-fig_alloc.pdf   allocator effect across model families (Table V visualized):
-                draw SD under random vs clip-mass allocation, log scale, with
-                the per-backbone variance ratios annotated.
+fig_alloc.pdf   allocator effect across model families (Table VI visualized):
+                draw SD under random vs clip-mass allocation, with the
+                per-backbone variance reductions annotated.
+
+NOTE: this script previously also wrote fig_decomp.pdf (a stacked-SD bar chart).
+That figure was WRONG (it added standard deviations linearly) and has been
+replaced by the two-panel scatter from w4f_make_fig_scatter.py.  Do NOT
+re-add a fig_decomp writer here — w4f is the single authoritative generator
+for fig_decomp.pdf, and running this script must never clobber it.
 
 Values are transcribed verbatim from the released per-draw result files
-(W3-A rec2 5-draw frozen pool, W3-N 25-draw pool, W3-K remedy runs) and match
-Tables IV/V to all reported digits.
+(W3-K remedy runs) and match Table VI to all reported digits.
 
 Usage:  python src/w4d_make_paper_figs.py [--paper-dir PAPER]
 """
@@ -101,7 +103,6 @@ def main():
     args, _ = ap.parse_known_args()
     figdir = os.path.join(args.paper_dir, "figures")
     os.makedirs(figdir, exist_ok=True)
-    fig_decomp(figdir)
     fig_alloc(figdir)
 
 

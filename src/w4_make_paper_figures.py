@@ -110,10 +110,11 @@ def schematic(path):
         ax.add_patch(Rectangle((x, y), 0.055, 0.055, facecolor=c, alpha=a,
                                edgecolor=C_EDGE, linewidth=0.5, zorder=3))
         x += 0.055 + 0.012
-    ax.text(0.055, y + 0.13, "vessel / temporal", fontsize=7.5, fontweight="bold")
+    ax.text(0.055, y + 0.13, "vessel-disjoint / temporal", fontsize=7.5, fontweight="bold")
     ax.text(0.055, y - 0.075,
-            "no identity crosses; only test-set class composition varies",
-            fontsize=6.0, color="#444444")
+            "vessel-disjoint: no known vessel ID crosses; temporal: recordings partitioned\n"
+            "by time --- identity isolation must be verified separately (see Table I)",
+            fontsize=6.0, color="#444444", linespacing=1.25)
 
     fig.tight_layout(pad=0.15)
     fig.savefig(path)

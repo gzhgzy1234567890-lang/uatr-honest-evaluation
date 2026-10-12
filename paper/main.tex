@@ -280,14 +280,14 @@ seeds & split draw and initialization decoupled \\
 \end{tabular}
 \end{table}
 
-\subsection{Pre-Registration Protocol}
-Every comparison in this paper was registered before its runs: the verdict thresholds (e.g., the
+\subsection{Pre-Specified Analysis Protocol}
+Every comparison in this paper was specified before its runs: the verdict thresholds (e.g., the
 remedy succeeds iff the SD ratio is $\le0.6$; the fine-tuning door opens iff tail top-2
 $\ge0.30$), the control predictions, and the identity-floor prediction for the $<5$-vessel classes
 were written down before the corresponding GPU jobs. Where a prediction failed---our first remedy
 candidate, weighting by vessel \emph{counts}, was rejected by a zero-cost dose--response check
 before any training---we report it (Sec.~\ref{sec:remedy}). We consider this discipline part of
-the contribution: the audit's claims are exactly as strong as their pre-registration.
+the contribution: the audit's claims are exactly as strong as their pre-specified plan.
 
 \section{Leakage: Existence Versus Exploitability}
 \label{sec:leak}
@@ -616,8 +616,9 @@ Backbone & Scheme & $n$ & mean & SD (pp) & pred.\ SD & ratio \\
 {\footnotesize $^{\dagger}$variance ratio 3.25; $F$-test $p=0.23$; permutation $p=0.084$---clip-mass
 shows \emph{observed} lower variability; superiority over SGKF is not established at conventional
 significance at these sample sizes. All schemes share the same 70/15/15 clip budget and vessel
-exclusivity; no vessel carries conflicting labels (5 of 892 have minority-class clips, 1.1\% of
-clips; allocation uses the vessel's majority class). Clip-mass variance ratios 14.4 / 8.7 / 5.1;
+exclusivity; no vessel carries conflicting class labels---5 of 892 vessels additionally carry a
+few minority-class clips (1.1\% of clips), which allocation assigns to the vessel's majority
+class. Clip-mass variance ratios 14.4 / 8.7 / 5.1;
 permutation $p\le0.013$ (exact enumeration of all $\binom{11}{5}=462$ scheme-label assignments,
 statistic = log variance ratio, two-sided; script \texttt{w4h\_exact\_perm.py} in the release).}
 \end{table*}
@@ -711,7 +712,7 @@ ran it (Table~\ref{tab:interv}).
 \centering
 \begin{tabular}{p{0.34\columnwidth}p{0.56\columnwidth}}
 \toprule
-Intervention & Pre-registered test and outcome \\
+Intervention & Pre-specified test and outcome \\
 \midrule
 Capacity (ResNet-18, 11.2M) & memorizes the training set (0.9999), tests at 0.378; $+1.0$\pp{}
 over \texttt{cnn\_small} \cite{soti2026}. \\
