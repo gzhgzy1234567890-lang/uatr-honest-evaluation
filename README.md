@@ -13,7 +13,7 @@ Companion repository for the manuscript *"Honest Evaluation of Underwater Acoust
    leave-one-draw-out). The composition predictor is calibrated once from per-class recalls and
    needs no retraining to score a candidate allocation.
 3. **A class-wise clip-mass allocation collapses the variance** to an allocator-limited floor
-   (4.69 → 1.24 pp; variance ratio 14.4, p = 0.002), reducing the draws needed to resolve a
+   (4.69 → 1.24 pp; variance ratio 14.4, exact permutation p = 0.004), reducing the draws needed to resolve a
    2 pp improvement from ~100 to 8 per system (3–7 under fully paired comparisons) — all figures
    are non-central-t planning estimates.
 4. **The remedy is correctly a no-op on DeepShip** (low composition variance), and the tail-class

@@ -52,11 +52,12 @@ five allocation schemes across three model families; and that a class-wise clip-
 allocation collapses the variance to a low, allocator-limited floor (4.69 to 1.24\,pp; variance
 ratio 14.4, exact permutation $p=0.004$), reducing the draws needed to resolve a 2\,pp improvement
 from about 100 to 8 per system (10--13 to 3--7 when comparisons are fully paired). Consistently
-across models, the remedy shows no benefit on DeepShip, where composition variance is absent. The
-low absolute accuracy of honest evaluation is not a pipeline defect: six tested
-remedies---capacity growth, post-hoc prior adjustment, selective prediction, training-mass
-analysis, frozen pretraining, and full fine-tuning---fail to decode the nine-class tail, whose
-three-tier structure is itself predicted from metadata. Frozen splits, allocation code, and a
+across models, the remedy shows no benefit on DeepShip, where composition-induced variability is small relative to the observed draw variability. The
+low absolute accuracy of honest evaluation is not a pipeline defect: five tested
+interventions---capacity growth, post-hoc prior adjustment, selective prediction, frozen
+pretraining, and full fine-tuning---fail to decode the nine-class tail, and a training-mass
+diagnostic shows recall tracks clip identity mass; the tail's three-tier structure is itself
+predicted from metadata. Frozen splits, allocation code, and a
 required-$N$ calculator are released.
 \end{abstract}
 
@@ -115,9 +116,10 @@ We make four contributions.
       3--7 draws rather than 10--13. A naive stratification balancing \emph{vessel counts} instead of
       clip masses fails exactly as the decomposition predicts.
 \item \textbf{The limits of tested remedies} (Sec.~\ref{sec:limits}). The low absolute accuracy of
-      honest evaluation is not a pipeline defect: six tested remedies---capacity growth, post-hoc
-      prior adjustment, selective prediction, training-mass analysis, frozen pretrained encoders,
-      and full fine-tuning---fail to decode the nine-class tail, whose three-tier structure
+      honest evaluation is not a pipeline defect: five tested interventions---capacity growth,
+      post-hoc prior adjustment, selective prediction, frozen pretrained encoders, and full
+      fine-tuning---fail to decode the nine-class tail, a training-mass diagnostic explains part
+      of the pattern, and the three-tier structure
       (learnable, partially rescuable, intervention-resistant) is predictable from metadata.
 \end{enumerate}
 
@@ -209,7 +211,8 @@ classes (evaluated)        & 12 (of 15) & 4 \\
 clips / recording (median) & 3        & 51 \\
 tiling ratio (clips$\times$5\,s / duration) & n/a & 0.994 \\
 clip index = stream position & no & 609/609 \\
-test clips with adjacent training clip & 5.7\% & 89.6\% \\
+test clips with adjacent training clip & n/a (index is not stream position) & 89.6\% \\
+acoustic 1-NN nearest training clip from same recording & 5.7\% & 66.8\% \\
 clip $-$ honest gap        & $+5.1$\pp & $+30.4$\pp \\
 \bottomrule
 \end{tabular}
@@ -441,7 +444,7 @@ Eq.~\eqref{eq:comp} would be exact if the per-class recalls were identical acros
 ignores is draw-to-draw variation in the recalls themselves, not class interactions. The variance of
 the predicted accuracies is the \emph{composition component}; the variance of the residuals
 (observed minus predicted) is the \emph{residual} component---initialization and optimization
-noise \emph{plus} any remaining draw-level effects (training-set composition, vessel difficulty).It is an empirical explained share, not an identified set of independent variance components, and
+noise \emph{plus} any remaining draw-level effects (training-set composition, vessel difficulty). It is an empirical explained share, not an identified set of independent variance components, and
 the estimator differs by row of Table~\ref{tab:decomp}. For the vessel row (25 draws $\ge$ 12
 classes) the composition component is the least-squares projection of the observed accuracies onto
 the composition shares: residuals are orthogonal to fitted values, so the covariance term vanishes
@@ -548,9 +551,10 @@ at $0.3198 \pm 4.97$\pp) and clip-mass draws $0.3215 \pm 1.24$\pp: variance rati
 ($F$-test $p=0.012$; exact permutation $p=0.004$; $16.1$ against the 25-draw random pool)---down to the
 level of the residual draw-to-draw variability quantified in Table~\ref{tab:decomp} ($1.65$\pp;
 not pure initialization noise, which the clip-level pipeline bounds at $0.41$\pp, but the
-residual band the allocator cannot remove). Because the test sets are now composition-matched, means are comparable
-across schemes (all within $1.1$\pp, Welch $p\ge0.59$): the allocator removes noise, not
-difficulty. Translating SD into experiment design: the draws per system needed to
+residual band the allocator cannot remove). Because the test sets are now composition-matched, the
+random, clip-mass, and SGKF schemes have comparable means (within $1.3$\pp, Welch $p\ge0.59$): the
+allocator removes noise, not difficulty; count-stratified shows a larger mean shift and is
+discussed separately. Translating SD into experiment design: the draws per system needed to
 resolve an improvement $\delta$ at $\alpha=0.05$ and power $0.8$, computed with the non-central
 $t$ distribution, are plotted in Fig.~\ref{fig:alloc} (right). At $\delta = 2$\pp: \textbf{98} draws for
 the random scheme, 28 for SGKF, \textbf{8} for clip-mass (the normal approximation gives
@@ -686,14 +690,14 @@ clip-mass draws       & 6 & 0.654 & 3.92 & \\
 \section{Limits of Tested Interventions: The Effective Class Structure}
 \label{sec:limits}
 
-\subsection{Six Tested Remedies, One Negative Result}
+\subsection{Tested Interventions and Diagnostics}
 Under the honest protocol the reference model collapses to three classes (Towing 0.72, Cargo 0.58,
 Tug 0.37 recall; nine classes $\le0.07$, four to five never predicted; macro-F1 0.11 against a 0.083
 uniform baseline). For every obvious explanation we pre-specified a discriminating experiment and
 ran it (Table~\ref{tab:interv}).
 
 \begin{table}[!t]
-\caption{Six Tested Remedies Against the Tail-Class Collapse}
+\caption{Diagnostic Analyses and Tested Interventions for Tail-Class Collapse}
 \label{tab:interv}
 \centering
 \begin{tabular}{p{0.34\columnwidth}p{0.56\columnwidth}}
@@ -737,7 +741,7 @@ projects 60\% onto Tug, Tug itself 37.8\% onto Cargo, and the class means in fea
 classes, 61.5\% of clips), \emph{partially rescuable} (Fishing, Pleasure Craft), and
 \emph{intervention-resistant} (Passenger, Sailing, SAR, Tanker, plus the identity-floor classes Port Tender
 and Dredging with 3 and 2 training vessels---a collapse we predicted before running and
-confirmed). ``Resistant'' means not recovered by any of the six tested remedies; it is not a
+confirmed). ``Resistant'' means not recovered by any of the tested interventions; it is not a
 claim that no intervention could ever work. The cross-corpus contrast confirms the attribution: the same pipeline learns all four
 DeepShip classes under the honest protocol (recalls 0.55--0.75), so the collapse is a property of
 the benchmark's class granularity, not of our models. We state this as a diagnosis across two
@@ -850,7 +854,7 @@ table feeding the predictor was frozen before the scored schemes' draws existed
 (Sec.~\ref{sec:predictor}). \emph{External.} The remedy is validated on one corpus's honest protocol across three
 model families, with the null control on a second; a third corpus with intermediate composition
 variance would complete the dose--response. Both benchmarks also ultimately draw on recordings
-from the same regional collection network (Ocean Networks Canada, Strait of Georgia)---ondisjoint vessels, recording campaigns, and periods---so the null control demonstrates that the
+from the same regional collection network (Ocean Networks Canada, Strait of Georgia)---on disjoint vessels, recording campaigns, and periods---so the null control demonstrates that the
 composition \emph{mechanism} generalizes across corpora, not that the recording conditions are
 independent; a corpus collected outside this network remains the missing external point.
 Absolute accuracies are low ($0.24$--$0.37$); our
@@ -858,9 +862,11 @@ claims concern \emph{variance and structure}, which we argue are protocol proper
 capacity/pretraining interventions bound the role of model choice. A SOTA-scale system would shift
 the per-class recall table feeding the predictor---but the predictor is re-estimated per system
 from its own random draws, so the framework, not the constants, is the contribution.
-\emph{Construct.} Equation~\eqref{eq:comp} is first-order: it ignores interactions between classes
-in the test set, which the DeepShip residual (composition explains only $\sim$10\% of a
-still-substantial 3\pp{} spread) makes visible. The 85\% share of the pre-specified five-draw
+\emph{Construct.} Equation~\eqref{eq:comp} holds the per-class recalls fixed: it cannot capture
+draw-specific recall variation arising from training-ship identity, test-ship difficulty, or
+acoustic conditions; class interactions, if present, are one possible contributor among these.
+The DeepShip residual (composition explains only $\sim$10\% of a
+still-substantial 3\pp{} spread) makes this visible. The 85\% share of the pre-specified five-draw
 analysis was re-estimated independently on the released 25-draw pool (89.0\%, permutation
 $p=0.0006$; Table~\ref{tab:decomp}); the remedy pools ($n{=}6$ per scheme) and the DeepShip
 vessel pool ($n{=}10$: $21.9\%$, $p=0.66$, consistent with the null control) remain too small for
@@ -879,9 +885,9 @@ remove a real leak and, on OceanShip, replace $0.4$\pp{} of clip-level noise wit
 metadata-driven noise that single-draw papers silently absorb. We showed this noise is 89\%
 composition (59\% predictable out-of-sample), removable by a class-mass allocation to a low,
 allocator-limited floor
-($14.4\times$ variance reduction, $p=0.002$), general across model families, and correctly
+($14.4\times$ variance reduction, exact permutation $p=0.004$), general across model families, and correctly
 predicted to be unnecessary on DeepShip. We also showed what the resulting honest numbers mean: a
-three-tier effective class structure that six tested remedies---including full fine-tuning of an
+three-tier effective class structure that the tested interventions---including full fine-tuning of an
 AudioSet-pretrained transformer---cannot open beyond its predicted limits under the tested
 settings. Benchmarks should report
 the allocation scheme, the draw variance, and the effective class structure; without them,

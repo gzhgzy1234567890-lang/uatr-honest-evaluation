@@ -20,9 +20,9 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, Rectangle
 
 plt.rcParams.update({
-    "font.size": 7.5,
+    "font.size": 10,
     "font.family": "DejaVu Sans",
-    "axes.linewidth": 0.6,
+    "axes.linewidth": 0.8,
 })
 
 # vessel colours (colourblind-safe-ish, print-safe)
