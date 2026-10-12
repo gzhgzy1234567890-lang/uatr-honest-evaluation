@@ -29,6 +29,7 @@ Guilin University of Electronic Technology, Guilin 541004, China (3409674230@qq.
 Xi'an 710071, China (guojunrui@stu.xidian.edu.cn)}
 \IEEEauthorblockA{Q.~Gong: Petroleum and Natural Gas Engineering,
 Southwest Petroleum University, Chengdu 610500, China (kungclive.8804@gmail.com)}
+\thanks{Running title: Benchmark Variance in Underwater Acoustic Recognition.}%
 \thanks{Z.~Gong and D.~Li contributed equally to this work. Corresponding author:
 Yongqiang~Xie (e-mail: yqxie@xidian.edu.cn).}%
 \thanks{All frozen splits, allocation code, per-clip predictions, and the required-$N$
@@ -41,20 +42,21 @@ calculator are released for replication.}}
 
 \begin{abstract}
 Identity-disjoint evaluation is now the recommended convention in underwater acoustic target
-recognition (UATR), but its statistical cost has never been quantified. On OceanShip (12 classes),
+recognition (UATR), but its statistical cost has never been quantified. On OceanShip,
 the vessel-disjoint accuracy of an identical model varies by $\pm$5.0\,pp across 25 independent
 draws---twelve times the clip-level noise---while the nominal clip-vs-honest gap is
 5.1\,pp on OceanShip but 30.4\,pp on DeepShip under identical code and recipe. We show that this
 draw-to-draw variance is dominated (89\% in-sample; 59\% out-of-sample under leave-one-draw-out)
-by the class composition of the test set, computable from metadata before any training; that a
+by the class composition of the test set, computable from metadata alone; that a
 first-order predictor calibrated on this decomposition correctly estimated the observed spread of
 five allocation schemes across three model families; and that a class-wise clip-mass stratified
 allocation collapses the variance to the lowest level observed across the tested allocations (4.69
 to 1.24\,pp; variance
 ratio 14.4, exact permutation $p=0.004$), reducing the draws needed to resolve a 2\,pp improvement
 from about 100 to 8 per system (10--13 to 3--7 when comparisons are fully paired). Consistently
-across models, the remedy shows no benefit on DeepShip, where composition-induced variability is small relative to the observed draw variability. The
-low absolute accuracy of honest evaluation is not a pipeline defect: five tested
+across models, the remedy shows no benefit on DeepShip, where composition-induced variability is small relative to the observed draw variability. In
+the tested settings and diagnostics, no pipeline defect emerged behind the low absolute accuracy
+of honest evaluation: five tested
 interventions---capacity growth, post-hoc prior adjustment, selective prediction, frozen
 pretraining, and full fine-tuning---fail to decode the nine-class tail, and a training-mass
 diagnostic shows recall tracks clip identity mass; the tail's three-tier structure is itself
@@ -117,9 +119,10 @@ We make four contributions.
       improvement from about 100 independent draws to 8---and paired two-model comparisons need
       3--7 draws rather than 10--13. A naive stratification balancing \emph{vessel counts} instead of
       clip masses fails exactly as the decomposition predicts.
-\item \textbf{The limits of tested remedies} (Sec.~\ref{sec:limits}). The low absolute accuracy of
-      honest evaluation is not a pipeline defect: five tested interventions---capacity growth,
-      post-hoc prior adjustment, selective prediction, frozen pretrained encoders, and full
+\item \textbf{The limits of tested remedies} (Sec.~\ref{sec:limits}). In the tested settings and
+      diagnostics, no pipeline defect emerged behind the low absolute accuracy of honest
+      evaluation: five tested interventions---capacity growth, post-hoc prior adjustment,
+      selective prediction, frozen pretrained encoders, and full
       fine-tuning---fail to decode the nine-class tail, a training-mass diagnostic explains part
       of the pattern, and the three-tier structure
       (learnable, partially rescuable, intervention-resistant) is predictable from metadata.
@@ -523,8 +526,9 @@ a second corpus---that there is nothing to fix---which is also confirmed.
 Out-of-sample honesty, audited by leave-one-draw-out prediction on the 25-draw vessel pool:
 fitting on 24 draws and predicting the held-out draw from its composition alone gives $r=0.80$
 (permutation $p=0.0002$, RMSE $3.1$\pp) and LODO $R^2=0.59$ against the in-sample $0.89$: per-draw
-accuracy is predictable for unseen draws at $\pm3$\pp, while the 89\% share is a population
-statement; we report both to keep the in-sample optimism visible.
+accuracy is predictable for unseen draws at $\pm3$\pp, while the 89\% share is an in-sample
+empirical variance share of the current 25 draws; we report both to keep the in-sample optimism
+visible.
 
 \begin{figure}[!t]
 \centering
@@ -546,7 +550,8 @@ order vessels by a hash of (draw seed, class, vessel); accumulate vessels into t
 $\sum_v m_v \ge q_c$ with $q_c = 0.15\sum_v m_v$; repeat into validation; the remainder is
 training. No clip crosses a vessel boundary, and because the last vessel admitted may overshoot
 the quota, each class's test clip count is constrained to within one vessel of the target rather
-than exactly equal to it---which also removes the composition bias of random draws.
+than exactly equal to it---and thus dampens the random deviations of test-set class proportions
+from the corpus distribution.
 
 \subsection{Results: The Variance Collapses to the Observed Floor}
 Table~\ref{tab:remedy} gives the pre-specified comparison. On the reference model, random draws
