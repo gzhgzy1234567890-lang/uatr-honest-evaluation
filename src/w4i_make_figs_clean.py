@@ -141,7 +141,7 @@ def fig_dose(figdir):
         ("Port Tender", 0.007, 3, 743), ("Dredging", 0.000, 2, 26),
         ("Anti-pollution equipment", 0.000, 5, 139),
     ]
-    KEY = {"Towing", "Cargo", "Tug", "Passenger", "Port Tender", "Dredging"}
+    KEY = {"Towing", "Cargo", "Tug", "Port Tender", "Dredging"}
     fig, axes = plt.subplots(1, 2, figsize=(4.6, 2.2), sharey=True)
     for ax, idx, xlabel, rho in ((axes[0], 2, "training vessels per class", 0.68),
                                  (axes[1], 3, "training clips per class", 0.83)):
@@ -184,15 +184,15 @@ def fig_tail(figdir):
     y = np.arange(len(CLASSES))[::-1]
     for name, a, b, col in tiers:
         ax.axhspan(y[b - 1] - 0.5, y[a] + 0.5, color=col, zorder=0)
-        ax.text(1.13, (y[b - 1] + y[a]) / 2, name, fontsize=8.5, color="#555",
-                style="italic", va="center", ha="left")
+        ax.text(1.04, (y[b - 1] + y[a]) / 2, name, fontsize=8.5, color="#555",
+                style="italic", va="center", ha="left", clip_on=False)
     ax.barh(y + 0.19, [rec_cnn[c] for c in CLASSES], height=0.36,
             label="cnn-small (from scratch)", color=C_B1)
     ax.barh(y - 0.19, [rec_ft[c] for c in CLASSES], height=0.36,
             label="fine-tuned AudioSet AST", color=C_ACC)
     ax.set_yticks(y)
     ax.set_yticklabels(CLASSES, fontsize=8.5)
-    ax.set_xlim(0, 1.55)
+    ax.set_xlim(0, 1.02)
     ax.set_ylim(-0.55, len(CLASSES) - 0.45)
     ax.set_xlabel("per-class recall, vessel-disjoint evaluation")
     ax.legend(fontsize=8, loc="lower right")

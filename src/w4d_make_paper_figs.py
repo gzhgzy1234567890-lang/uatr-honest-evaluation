@@ -85,7 +85,7 @@ def fig_alloc(figdir):
     ax.set_xticks(x)
     ax.set_xticklabels(["logreg", "cnn-small", "cnn-wide"], fontsize=9)
     ax.set_ylabel("vessel-disjoint draw SD (pp)", fontsize=9)
-    ax.set_ylim(0, 6.4)
+    ax.set_ylim(0, 8.6)
     ax.grid(axis="y", alpha=0.3)
     ax.legend(fontsize=7.5, loc="upper right", framealpha=0.9)
     ax.set_title("The allocator decides the noise floor\n(OceanShip, three model families)",

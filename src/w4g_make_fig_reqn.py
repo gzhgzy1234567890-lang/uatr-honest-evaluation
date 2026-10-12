@@ -58,7 +58,7 @@ def main():
              for name, sd, _, _ in CURVES}
     for name, sd, col, ls in CURVES:
         ax.plot(deltas, curve[name], color=col, ls=ls, lw=1.6, label=name)
-    ax.axhline(30, color="#bbb", lw=0.8, ls=":")
+    ax.axhline(30, color="#c44e52", lw=0.9, ls=":")
     ax.axvline(2.0, color="#bbb", lw=0.8, ls=":")
     ax.annotate("98", (2.0, 98), xytext=(4, 0), textcoords="offset points", fontsize=7.5,
                 color=C["clip"])
@@ -69,7 +69,7 @@ def main():
     ax.set_yscale("log")
     ax.set_xlim(5, 1)
     ax.set_xlabel("improvement to be resolved $\\delta$ (pp)")
-    ax.set_ylabel("independent draws per system ($\\alpha$=.05, power .8, non-central $t$)")
+    ax.set_ylabel("independent draws per system")
     ax.legend(fontsize=7.5)
     ax.grid(alpha=0.25, lw=0.6)
     fig.tight_layout()

@@ -43,7 +43,8 @@ calculator are released for replication.}}
 \begin{abstract}
 Identity-disjoint evaluation is now the recommended convention in underwater acoustic target
 recognition (UATR), but its statistical cost has never been quantified. On OceanShip,
-the vessel-disjoint accuracy of an identical model varies by $\pm$5.0\,pp across 25 independent
+the vessel-disjoint accuracy of an identical model varies by $\pm$5.0 percentage points (pp)
+across 25 independent
 draws---twelve times the clip-level noise---while the clip-vs-honest gap is
 5.1\,pp on OceanShip but 30.4\,pp on DeepShip. This
 draw-to-draw variance is dominated (89\% in-sample; 59\% out-of-sample under leave-one-draw-out)
@@ -239,9 +240,12 @@ schedule aborts the run. Fig.~\ref{fig:schematic} shows what each policy lets cr
 \includegraphics[width=\columnwidth]{figures/fig_schematic.pdf}
 \caption{What crosses the split boundary under each slicing policy (one row of squares = the clips
 of one or two vessels). Clip random puts adjacent 5\,s windows of the \emph{same audio event} on
-both sides and the vessel's identity in the training set; recording random keeps recordings intact
-but still lets $98\%$ of vessels cross; vessel/temporal isolation crosses nothing---and thereby
-turns test-set class composition into a random variable, the subject of
+both sides and the vessel's identity in the training set---the adjacency mechanism is DeepShip's
+continuous tiling (OceanShip's clip index is not a stream position, Table~\ref{tab:corpora});
+recording random keeps recordings intact but still lets $98\%$ of vessels cross; vessel-disjoint
+guarantees that no \emph{known} vessel ID crosses, whereas temporal partitioning isolates
+recordings in time and requires separate verification of identity isolation (see the annotation in
+the figure)---and thereby turns test-set class composition into a random variable, the subject of
 Sec.~\ref{sec:variance}.}
 \label{fig:schematic}
 \end{figure}
@@ -490,10 +494,15 @@ vessel disjoint  & \best{4.97} & \best{4.69} & \best{89} & 1.65 \\
 \end{tabular}
 \vspace{2pt}
 
-{\footnotesize Composition SD: vessel row = least-squares projection (25 draws, $2\,\mathrm{Cov}(C,E)<0.01$\pp$^2$);
-clip/recording rows = fixed pooled per-class recalls (5 draws; recording cross-term
-$2\,\mathrm{Cov}(C,E)=0.20$\pp$^2$, so the components are not orthogonal there). The share is
-$\mathrm{Var}(C)/\mathrm{Var}(A)$ throughout.}
+{\footnotesize Estimator definitions: \emph{vessel} row = least-squares projection of the 25
+observed accuracies on the composition shares (the fitted coefficients need not equal any measured
+recall); \emph{clip/recording} rows = fixed pooled per-class recalls $r(c)$ measured on the same 5
+draws (5 draws $<$ 12 classes, so OLS is underdetermined there). Cross-terms
+$2\,\mathrm{Cov}(C,E)$: clip 0 ($\mathrm{Var}(C)=0$), recording 0.20\,\pp$^2$, vessel
+$<0.01$\,\pp$^2$ (orthogonal by projection). The share is $\mathrm{Var}(C)/\mathrm{Var}(A)$
+throughout; calibration draws = prediction draws in every row, and for the cross-scheme
+predictions of Sec.~\ref{sec:predictor} the recalls are frozen before the scored schemes' draws
+exist.}
 
 \end{table}
 
@@ -618,7 +627,8 @@ shows \emph{observed} lower variability; superiority over SGKF is not establishe
 significance at these sample sizes. All schemes share the same 70/15/15 clip budget and vessel
 exclusivity; no vessel carries conflicting class labels---5 of 892 vessels additionally carry a
 few minority-class clips (1.1\% of clips), which allocation assigns to the vessel's majority
-class. Clip-mass variance ratios 14.4 / 8.7 / 5.1;
+class, and all clips of an allocated vessel always remain within a single subset. Clip-mass
+variance ratios 14.4 / 8.7 / 5.1;
 permutation $p\le0.013$ (exact enumeration of all $\binom{11}{5}=462$ scheme-label assignments,
 statistic = log variance ratio, two-sided; script \texttt{w4h\_exact\_perm.py} in the release).}
 \end{table*}
