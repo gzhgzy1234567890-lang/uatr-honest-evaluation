@@ -24,11 +24,11 @@ Decomposing, Predicting, and Reducing Benchmark Variance}
 Xidian University, Xi'an 710071, China (andy.zihao.gong@gmail.com;
 lidehu64@gmail.com; yqxie@xidian.edu.cn)}
 \IEEEauthorblockA{J.~Liu: School of Information and Communication Engineering,
-Guilin University of Electronic Technology, Guilin, China (3409674230@qq.com)}
+Guilin University of Electronic Technology, Guilin 541004, China (3409674230@qq.com)}
 \IEEEauthorblockA{J.~Guo: School of Mechano-Electronic Engineering, Xidian University,
-Xi'an, China (guojunrui@stu.xidian.edu.cn)}
+Xi'an 710071, China (guojunrui@stu.xidian.edu.cn)}
 \IEEEauthorblockA{Q.~Gong: Petroleum and Natural Gas Engineering,
-Southwest Petroleum University, Chengdu, China (kungclive.8804@gmail.com)}
+Southwest Petroleum University, Chengdu 610500, China (kungclive.8804@gmail.com)}
 \thanks{Z.~Gong and D.~Li contributed equally to this work. Corresponding author:
 Yongqiang~Xie (e-mail: yqxie@xidian.edu.cn).}%
 \thanks{All frozen splits, allocation code, per-clip predictions, and the required-$N$
@@ -49,7 +49,7 @@ draw-to-draw variance is dominated (89\% in-sample; 59\% out-of-sample under lea
 by the class composition of the test set, computable from metadata before any training; that a
 first-order predictor calibrated on this decomposition correctly estimated the observed spread of
 five allocation schemes across three model families; and that a class-wise clip-mass stratified
-allocation collapses the variance to a low, allocator-limited floor (4.69 to 1.24\,pp; variance
+allocation collapses the variance to the lowest level observed across the tested allocations (4.69 to 1.24\,pp; variance
 ratio 14.4, exact permutation $p=0.004$), reducing the draws needed to resolve a 2\,pp improvement
 from about 100 to 8 per system (10--13 to 3--7 when comparisons are fully paired). Consistently
 across models, the remedy shows no benefit on DeepShip, where composition-induced variability is small relative to the observed draw variability. The
@@ -109,8 +109,9 @@ We make four contributions.
       (Sec.~\ref{sec:control}).
 \item \textbf{A remedy with measured variance reduction} (Sec.~\ref{sec:remedy}). A class-wise
       clip-mass stratified allocation---assigning whole vessels until each class has contributed
-      its quota of \emph{clips}---collapses the honest-protocol variance to a low,
-      allocator-limited floor ($4.69\pp \to 1.24\pp$; variance ratio 14.4, exact permutation $p=0.004$), generalizes across
+      its quota of \emph{clips}---collapses the honest-protocol variance to the lowest level
+      observed across the tested allocations ($4.69\pp \to 1.24\pp$; variance ratio 14.4, exact
+      permutation $p=0.004$), generalizes across
       a linear probe and a $4\times$ wider CNN, and reduces the draws needed to resolve a 2\pp{}
       improvement from about 100 independent draws to 8---and paired two-model comparisons need
       3--7 draws rather than 10--13. A naive stratification balancing \emph{vessel counts} instead of
@@ -407,7 +408,7 @@ clip $-$ honest (paired) & $+5.1\pm4.5$\pp{} ($p{=}.064$) & $+5.3\pm4.6$\pp{} ($
 confirms the ladder and quantifies the allocator effect on OceanShip vessel-disjoint draw SD:
 $5.0$\pp{} random ($n{=}25$), $4.9$ count-stratified, $2.6$ SGKF, $1.2$ clip-mass ($n{=}6$)—the
 same ordering on \texttt{cnn\_wide} and \texttt{logreg}: the allocator a comparison inherits, not
-the number of draws, decides its noise floor. DeepShip vessel-disjoint: ten draws over 290 vessel
+the number of draws, decides the observed noise level. DeepShip vessel-disjoint: ten draws over 290 vessel
 groups (48 AIS-unjoined recordings kept as singletons), every run verified at $0\%$ overlap of
 recordings and \emph{known} identities (the 48 are guaranteed distinct recordings, not distinct
 ships—see below); it lands $0.6$\pp{} from temporal ($t$95 $[0.585,0.663]$)---two disjoint honest
@@ -620,7 +621,7 @@ statistic = log variance ratio, two-sided; script \texttt{w4h\_exact\_perm.py} i
 \includegraphics[width=0.5\textwidth]{figures/fig_reqn.pdf}
 \caption{Left: Table~\ref{tab:remedy} at a glance---the vessel-disjoint draw SD under random
 versus clip-mass allocation, per model family (ratios annotated); the allocator, not the backbone,
-decides the noise floor. Right: independent draws per system required to resolve an improvement of
+decides the observed noise level. Right: independent draws per system required to resolve an improvement of
 $\delta$\pp{} ($\alpha=0.05$, power 0.8, two-sample non-central $t$), for the random convention,
 \texttt{StratifiedGroupKFold}, and clip-mass allocation; dashed line: a realistic weekly GPU
 budget. Planning estimates under SDs measured on 5--25 draws.}
@@ -739,14 +740,14 @@ the confusion structure
 projects 60\% onto Tug, Tug itself 37.8\% onto Cargo, and the class means in feature space score
 \emph{below} chance---the tail resolves into three tiers: \emph{learnable} (Towing, Cargo, Tug; 3
 classes, 61.5\% of clips), \emph{partially rescuable} (Fishing, Pleasure Craft), and
-\emph{intervention-resistant} (Passenger, Sailing, SAR, Tanker, plus the identity-floor classes Port Tender
-and Dredging with 3 and 2 training vessels---a collapse we predicted before running and
+\emph{intervention-resistant} (Passenger, Sailing, SAR, Tanker, and the identity-floor classes Port
+Tender, Dredging, and Anti-pollution equipment---a collapse we predicted before running and
 confirmed). ``Resistant'' means not recovered by any of the tested interventions; it is not a
 claim that no intervention could ever work. The cross-corpus contrast confirms the attribution: the same pipeline learns all four
-DeepShip classes under the honest protocol (recalls 0.55--0.75), so the collapse is a property of
-the benchmark's class granularity, not of our models. We state this as a diagnosis across two
-corpora---which differ in more than class count---rather than an isolated causal factor; a
-within-corpus class-merge experiment is the clean test and remains future work.
+DeepShip classes under the honest protocol (recalls 0.55--0.75), so the observed contrast is
+consistent with a substantial role of the benchmark's label granularity, though it does not
+isolate granularity as the sole causal factor; a within-corpus class-merge experiment is the
+clean test and remains future work.
 
 \begin{figure}[!t]
 \centering
@@ -883,8 +884,8 @@ should expect exactly this analysis.
 Honest evaluation in UATR is currently a trade with unquantified terms: identity-disjoint splits
 remove a real leak and, on OceanShip, replace $0.4$\pp{} of clip-level noise with $5.0$\pp{} of
 metadata-driven noise that single-draw papers silently absorb. We showed this noise is 89\%
-composition (59\% predictable out-of-sample), removable by a class-mass allocation to a low,
-allocator-limited floor
+composition (59\% predictable out-of-sample), removable by a class-mass allocation to the lowest
+variability observed across the tested allocations
 ($14.4\times$ variance reduction, exact permutation $p=0.004$), general across model families, and correctly
 predicted to be unnecessary on DeepShip. We also showed what the resulting honest numbers mean: a
 three-tier effective class structure that the tested interventions---including full fine-tuning of an
